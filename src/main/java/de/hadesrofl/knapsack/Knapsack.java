@@ -52,7 +52,7 @@ public class Knapsack {
     }
     public int knapsackDP() {
         int n = items.size();
-        int val[] = new int[n]; 
+        int val[] = new int[n];
         int wt[] = new int[n];
         int[][] V = new int[n + 1][m + 1]; //Matrix for bottom-up approach
         // intialize to 0 (the sack could have a weight of 0)
