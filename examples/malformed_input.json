@@ -1,0 +1,18 @@
+{
+  "Knapsack": {
+    "Items": {
+      "1": {
+        "value": 50,
+        "weight": 5
+      },
+      "2": {
+        "value": 140,
+        "weight": 20
+      },
+      "3": {
+        "value": 60,
+        "weight": 10
+      }
+    }
+  }
+}
