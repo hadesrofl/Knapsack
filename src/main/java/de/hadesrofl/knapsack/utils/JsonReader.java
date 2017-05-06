@@ -1,63 +1,68 @@
 package de.hadesrofl.knapsack.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
+import de.hadesrofl.knapsack.Item;
+import de.hadesrofl.knapsack.KnapsackProblem;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * <p>
- * <strong>last update:</strong> {DATE}
+ * <strong>last update:</strong> 06.05.2017
  * </p>
  * <strong>Description:</strong>
  * <p>
- * <p>
+ * This class allows to read JSON files
  * </p>
  *
  * @author Rene Kremer
  *         <p>
- *         Copyright (c) {YEAR} by Rene Kremer
+ *         Copyright (c) 2017 by Rene Kremer
  *         </p>
  *         <p>
  *         <strong>License:</strong> none
  *         </p>
- * @version 0.01
+ * @version 1.0
  */
-/**
- * Jimmey - a discord bot written with thanks to Discord4J (https://github.com/austinv11/Discord4J)
- * Copyright (c) 2016 René Kremer
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
-
- import java.io.BufferedReader;
-        import java.io.File;
-        import java.io.FileReader;
-        import java.io.IOException;
- import java.util.LinkedList;
- import java.util.List;
-
- import de.hadesrofl.knapsack.Item;
- import de.hadesrofl.knapsack.Knapsack;
- import org.json.JSONException;
- import org.json.JSONObject;
-
 public class JsonReader {
+    /**
+     * Creates a {@link KnapsackProblem} out of a json file. Returns an empty knapsack if an error occurs
+     *
+     * @param file is the json file to read from
+     * @return an non empty KnapsackProblem on success, otherwise an empty Knapsack
+     */
+    public static KnapsackProblem createKnapsack(String file) {
+        try {
+            JSONObject obj = JsonReader.readFile(file);
+            JSONObject knapsack = obj.getJSONObject("Knapsack");
+            JSONObject items = knapsack.getJSONObject("Items");
+            List<Item> itemList = new LinkedList<Item>();
+            int W = knapsack.getInt("W");
+            for (int i = 1; i <= items.length(); i++) {
+                JSONObject item = items.getJSONObject(i + "");
+                itemList.add(new Item(item.getInt("value"), item.getInt("weight")));
+            }
+            return new KnapsackProblem(W, itemList);
+        } catch (IOException | JSONException e) {
+            System.err.println("Error while reading json file " + file);
+        }
+        return new KnapsackProblem(0, new LinkedList<Item>());
+    }
+
     /**
      * Reads a json file and returns it as JSONObject
      *
-     * @param file
-     *            is the file to read
+     * @param file is the file to read
      * @return an json object
+     * @throws IOException if an error occured while reading the json file
      */
-    public static JSONObject readFile(String file) throws IOException {
+    private static JSONObject readFile(String file) throws IOException {
         if (file != null && file.compareTo("") != 0)
             return readFile(new File(file));
         else
@@ -67,11 +72,11 @@ public class JsonReader {
     /**
      * Reads a json file and returns it as JSONObject
      *
-     * @param f
-     *            is the file to read
+     * @param f is the file to read
      * @return an json object
+     * @throws IOException if an error occured while reading the json file
      */
-    public static JSONObject readFile(File f) throws IOException {
+    private static JSONObject readFile(File f) throws IOException {
         String jsonData = "";
         BufferedReader br = null;
         try {
@@ -90,28 +95,9 @@ public class JsonReader {
                 System.err.println("Can't close buffered reader!");
             }
         }
-        JSONObject obj = null;
         if (jsonData.compareTo("") != 0)
             return new JSONObject(jsonData);
         else throw new IOException("Error while reading json file " + f);
-    }
-
-    public static Knapsack createKnapsack(String file) {
-        try{
-            JSONObject obj = JsonReader.readFile(file);
-            JSONObject knapsack = obj.getJSONObject("Knapsack");
-            JSONObject items = knapsack.getJSONObject("Items");
-            List<Item> itemList = new LinkedList<Item>();
-            int W = knapsack.getInt("W");
-            for (int i = 1; i <= items.length(); i++) {
-                JSONObject item = items.getJSONObject(i + "");
-                itemList.add(new Item(item.getInt("value"), item.getInt("weight")));
-            }
-            return new Knapsack(W, itemList);
-        }catch(IOException|JSONException e){
-            System.err.println("Error while reading json file " + file);
-        }
-        return new Knapsack(0,new LinkedList<Item>());
     }
 }
 
